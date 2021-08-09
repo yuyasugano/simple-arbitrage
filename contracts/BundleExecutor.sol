@@ -29,7 +29,8 @@ interface IWETH is IERC20 {
 contract FlashBotsMultiCall {
     address private immutable owner;
     address private immutable executor;
-    IWETH private constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    // WETH9 in Goerli testnet
+    IWETH private constant WETH = IWETH(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6);
 
     modifier onlyExecutor() {
         require(msg.sender == executor);
@@ -44,11 +45,14 @@ contract FlashBotsMultiCall {
     constructor(address _executor) public payable {
         owner = msg.sender;
         executor = _executor;
+
+        // can fund a contract with ETH and get WETH in a contract
         if (msg.value > 0) {
             WETH.deposit{value: msg.value}();
         }
     }
 
+    // needs receive() external payable to receive ETH in a contract
     receive() external payable {
     }
 
@@ -69,6 +73,8 @@ contract FlashBotsMultiCall {
         if (_ethBalance < _ethAmountToCoinbase) {
             WETH.withdraw(_ethAmountToCoinbase - _ethBalance);
         }
+
+        // transfer a miner fee to the coinbase address, MEV-miner
         block.coinbase.transfer(_ethAmountToCoinbase);
     }
 

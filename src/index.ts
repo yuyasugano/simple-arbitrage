@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { FlashbotsBundleProvider } from "@flashbots/ethers-provider-bundle";
 import { Contract, providers, Wallet } from "ethers";
 import { BUNDLE_EXECUTOR_ABI } from "./abi";
@@ -52,7 +53,7 @@ async function main() {
     flashbotsProvider,
     new Contract(BUNDLE_EXECUTOR_ADDRESS, BUNDLE_EXECUTOR_ABI, provider) )
 
-  const markets = await UniswappyV2EthPair.getUniswapMarketsByToken(provider, FACTORY_ADDRESSES);
+  const markets: any = await UniswappyV2EthPair.getUniswapMarketsByToken(provider, FACTORY_ADDRESSES);
   provider.on('block', async (blockNumber) => {
     await UniswappyV2EthPair.updateReserves(provider, markets.allMarketPairs);
     const bestCrossedMarkets = await arbitrage.evaluateMarkets(markets.marketsByToken);

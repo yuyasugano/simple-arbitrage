@@ -7,14 +7,9 @@ import { ETHER } from "./utils";
 import { MarketsByToken } from "./Arbitrage";
 
 // batch count limit helpful for testing, loading entire set of uniswap markets takes a long time to load
-const BATCH_COUNT_LIMIT = 100;
-const UNISWAP_BATCH_SIZE = 1000
-
-// Not necessary, slightly speeds up loading initialization when we know tokens are bad
-// Estimate gas will ensure we aren't submitting bad bundles, but bad tokens waste time
-const blacklistTokens = [
-  '0xD75EA151a61d06868E31F8988D28DFE5E9df57B4'
-]
+// decreased the bach count limit and the batch size
+const BATCH_COUNT_LIMIT = 1;
+const UNISWAP_BATCH_SIZE = 100;
 
 interface GroupedMarkets {
   marketsByToken: MarketsByToken;
@@ -63,9 +58,9 @@ export class UniswappyV2EthPair extends EthMarket {
         } else {
           continue;
         }
-        if (!blacklistTokens.includes(tokenAddress)) {
-          const uniswappyV2EthPair = new UniswappyV2EthPair(marketAddress, [pair[0], pair[1]], "");
-          marketPairs.push(uniswappyV2EthPair);
+        
+        const uniswappyV2EthPair = new UniswappyV2EthPair(marketAddress, [pair[0], pair[1]], "");
+        marketPairs.push(uniswappyV2EthPair);
         }
       }
       if (pairs.length < UNISWAP_BATCH_SIZE) {
